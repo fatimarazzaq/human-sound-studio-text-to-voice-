@@ -1,46 +1,46 @@
 
 import { Voice, AudioConversion } from '@/types';
 
-// Sample voices - these would be replaced with actual voices from an API
+// Updated voices with rich descriptions highlighting quality, emotional range, and accent details
 export const sampleVoices: Voice[] = [
   {
     id: 'male-1',
     name: 'James',
     gender: 'male',
-    description: 'Deep and authoritative male voice with a warm tone.',
+    description: 'Clear and articulate British English male voice with a warm, conversational tone. Excellent for storytelling with subtle emotional inflections.',
   },
   {
     id: 'male-2',
     name: 'Michael',
     gender: 'male',
-    description: 'Clear and professional male voice with a neutral accent.',
+    description: 'Crisp, professional American English male voice with a calm, authoritative presence. Perfect for explanations with natural-sounding emphasis.',
     premium: true,
   },
   {
     id: 'male-3',
     name: 'Robert',
     gender: 'male',
-    description: 'Smooth and engaging male voice with a slight British accent.',
+    description: 'Smooth and engaging British English male voice with excellent diction and emotional range. Ideal for narrative content requiring nuanced expression.',
     premium: true,
   },
   {
     id: 'female-1',
     name: 'Emma',
     gender: 'female',
-    description: 'Friendly and articulate female voice with a warm tone.',
+    description: 'Youthful 24-year-old British English female voice with crystal clear pronunciation. Conveys a friendly, conversational style with natural emotional depth.',
   },
   {
     id: 'female-2',
     name: 'Sophia',
     gender: 'female',
-    description: 'Clear and professional female voice with a neutral accent.',
+    description: '23-year-old American English female voice with exceptional clarity and a soothing, confident tone. Perfect for engaging presentations with authentic emotional qualities.',
     premium: true,
   },
   {
     id: 'female-3',
     name: 'Olivia',
     gender: 'female',
-    description: 'Smooth and engaging female voice with a slight British accent.',
+    description: '25-year-old British English female voice with a melodic quality and excellent diction. Delivers content with natural pacing and subtle emotional inflections.',
     premium: true,
   },
 ];
