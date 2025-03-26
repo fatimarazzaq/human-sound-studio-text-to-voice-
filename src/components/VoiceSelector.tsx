@@ -1,9 +1,10 @@
 
-import { useState } from 'react';
-import { sampleVoices } from '@/utils/audioUtils';
+import { useState, useEffect } from 'react';
+import { sampleVoices, playVoicePreview } from '@/utils/audioUtils';
 import { Voice } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Volume2, Play, Lock } from 'lucide-react';
+import { Volume2, Play, Lock, Square } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface VoiceSelectorProps {
   onSelect: (voiceId: string) => void;
@@ -14,20 +15,57 @@ interface VoiceSelectorProps {
 const VoiceSelector = ({ onSelect, selectedVoiceId, isLoggedIn = false }: VoiceSelectorProps) => {
   const [currentGender, setCurrentGender] = useState<'male' | 'female' | 'all'>('all');
   const [previewingVoiceId, setPreviewingVoiceId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const filteredVoices = currentGender === 'all' 
     ? sampleVoices 
     : sampleVoices.filter(voice => voice.gender === currentGender);
 
-  const playPreview = (voice: Voice) => {
-    if (voice.premium && !isLoggedIn) return;
+  useEffect(() => {
+    // Listen for audio ended event to reset the previewing state
+    const handleAudioEnded = () => {
+      setPreviewingVoiceId(null);
+    };
+
+    const audio = document.getElementById('voice-preview-audio') as HTMLAudioElement;
+    if (audio) {
+      audio.addEventListener('ended', handleAudioEnded);
+    }
+
+    return () => {
+      const audio = document.getElementById('voice-preview-audio') as HTMLAudioElement;
+      if (audio) {
+        audio.removeEventListener('ended', handleAudioEnded);
+      }
+    };
+  }, [previewingVoiceId]);
+
+  const handlePlayPreview = (voice: Voice) => {
+    if (voice.premium && !isLoggedIn) {
+      toast({
+        title: "Premium Voice",
+        description: "Please upgrade your plan to access premium voices.",
+        variant: "default",
+      });
+      return;
+    }
     
     setPreviewingVoiceId(voice.id);
+    playVoicePreview(voice.id);
     
-    // In a real app, this would play an audio preview
+    // Set a timeout to reset the state if the audio doesn't play or end properly
     setTimeout(() => {
-      setPreviewingVoiceId(null);
-    }, 3000);
+      setPreviewingVoiceId(prev => prev === voice.id ? null : prev);
+    }, 10000); // 10 seconds as a safety
+  };
+
+  const handleStopPreview = () => {
+    const audio = document.getElementById('voice-preview-audio') as HTMLAudioElement;
+    if (audio) {
+      audio.pause();
+      audio.remove();
+    }
+    setPreviewingVoiceId(null);
   };
 
   return (
@@ -92,13 +130,14 @@ const VoiceSelector = ({ onSelect, selectedVoiceId, isLoggedIn = false }: VoiceS
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1"
-                onClick={() => playPreview(voice)}
-                disabled={voice.premium && !isLoggedIn || previewingVoiceId === voice.id}
+                className={`flex-1 voice-preview-button ${previewingVoiceId === voice.id ? 'playing' : ''}`}
+                onClick={() => previewingVoiceId === voice.id ? handleStopPreview() : handlePlayPreview(voice)}
+                disabled={voice.premium && !isLoggedIn}
               >
                 {previewingVoiceId === voice.id ? (
-                  <span className="flex items-center">
-                    Playing<span className="ml-1 animate-pulse">...</span>
+                  <span className="flex items-center gap-1">
+                    <Square size={14} /> 
+                    Stop
                   </span>
                 ) : (
                   <span className="flex items-center gap-1">

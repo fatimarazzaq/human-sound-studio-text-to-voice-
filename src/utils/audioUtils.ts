@@ -8,6 +8,7 @@ export const sampleVoices: Voice[] = [
     name: 'James',
     gender: 'male',
     description: 'Clear and articulate British English male voice with a warm, conversational tone. Excellent for storytelling with subtle emotional inflections.',
+    previewUrl: 'https://audio-samples.github.io/samples/mp3/blizzard_biased/sample-1.mp3',
   },
   {
     id: 'male-2',
@@ -15,6 +16,7 @@ export const sampleVoices: Voice[] = [
     gender: 'male',
     description: 'Crisp, professional American English male voice with a calm, authoritative presence. Perfect for explanations with natural-sounding emphasis.',
     premium: true,
+    previewUrl: 'https://audio-samples.github.io/samples/mp3/blizzard_biased/sample-2.mp3',
   },
   {
     id: 'male-3',
@@ -22,12 +24,14 @@ export const sampleVoices: Voice[] = [
     gender: 'male',
     description: 'Smooth and engaging British English male voice with excellent diction and emotional range. Ideal for narrative content requiring nuanced expression.',
     premium: true,
+    previewUrl: 'https://audio-samples.github.io/samples/mp3/blizzard_biased/sample-3.mp3',
   },
   {
     id: 'female-1',
     name: 'Emma',
     gender: 'female',
     description: 'Youthful 24-year-old British English female voice with crystal clear pronunciation. Conveys a friendly, conversational style with natural emotional depth.',
+    previewUrl: 'https://audio-samples.github.io/samples/mp3/voice_samples/sample-1.mp3',
   },
   {
     id: 'female-2',
@@ -35,6 +39,7 @@ export const sampleVoices: Voice[] = [
     gender: 'female',
     description: '23-year-old American English female voice with exceptional clarity and a soothing, confident tone. Perfect for engaging presentations with authentic emotional qualities.',
     premium: true,
+    previewUrl: 'https://audio-samples.github.io/samples/mp3/voice_samples/sample-2.mp3',
   },
   {
     id: 'female-3',
@@ -42,6 +47,7 @@ export const sampleVoices: Voice[] = [
     gender: 'female',
     description: '25-year-old British English female voice with a melodic quality and excellent diction. Delivers content with natural pacing and subtle emotional inflections.',
     premium: true,
+    previewUrl: 'https://audio-samples.github.io/samples/mp3/voice_samples/sample-3.mp3',
   },
 ];
 
@@ -64,6 +70,37 @@ export const convertTextToSpeech = async (
       };
       resolve(conversion);
     }, 2000);
+  });
+};
+
+// Function to play a voice preview
+export const playVoicePreview = (voiceId: string): void => {
+  const voice = sampleVoices.find(v => v.id === voiceId);
+  if (!voice || !voice.previewUrl) return;
+  
+  // Stop any currently playing audio
+  const existingAudio = document.getElementById('voice-preview-audio') as HTMLAudioElement;
+  if (existingAudio) {
+    existingAudio.pause();
+    existingAudio.remove();
+  }
+  
+  // Create and play new audio
+  const audio = new Audio(voice.previewUrl);
+  audio.id = 'voice-preview-audio';
+  document.body.appendChild(audio);
+  
+  // Add a class to indicate playing state on the component
+  audio.addEventListener('ended', () => {
+    const previewButtons = document.querySelectorAll('.voice-preview-button');
+    previewButtons.forEach(button => {
+      button.classList.remove('playing');
+    });
+    audio.remove();
+  });
+  
+  audio.play().catch(error => {
+    console.error('Error playing audio preview:', error);
   });
 };
 

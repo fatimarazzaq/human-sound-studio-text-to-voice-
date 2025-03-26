@@ -1,25 +1,57 @@
 
 import Navbar from '@/components/Navbar';
-import { sampleVoices } from '@/utils/audioUtils';
+import { sampleVoices, playVoicePreview } from '@/utils/audioUtils';
 import { Button } from '@/components/ui/button';
-import { Volume2, Play, Lock } from 'lucide-react';
-import { useState } from 'react';
+import { Volume2, Play, Lock, Square } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 const Voices = () => {
   const [currentGender, setCurrentGender] = useState<'male' | 'female' | 'all'>('all');
   const [previewingVoiceId, setPreviewingVoiceId] = useState<string | null>(null);
+  const { toast } = useToast();
   
   const filteredVoices = currentGender === 'all' 
     ? sampleVoices 
     : sampleVoices.filter(voice => voice.gender === currentGender);
   
-  const playPreview = (voiceId: string) => {
-    setPreviewingVoiceId(voiceId);
-    
-    // In a real app, this would play an audio preview
-    setTimeout(() => {
+  useEffect(() => {
+    // Listen for audio ended event to reset the previewing state
+    const handleAudioEnded = () => {
       setPreviewingVoiceId(null);
-    }, 3000);
+    };
+
+    const audio = document.getElementById('voice-preview-audio') as HTMLAudioElement;
+    if (audio) {
+      audio.addEventListener('ended', handleAudioEnded);
+    }
+
+    return () => {
+      const audio = document.getElementById('voice-preview-audio') as HTMLAudioElement;
+      if (audio) {
+        audio.removeEventListener('ended', handleAudioEnded);
+      }
+    };
+  }, [previewingVoiceId]);
+  
+  const handlePlayPreview = (voiceId: string, isPremium: boolean = false) => {
+    // For demo purposes, allow playing premium voices on the voices page
+    setPreviewingVoiceId(voiceId);
+    playVoicePreview(voiceId);
+    
+    // Set a timeout to reset the state if the audio doesn't play or end properly
+    setTimeout(() => {
+      setPreviewingVoiceId(prev => prev === voiceId ? null : prev);
+    }, 10000); // 10 seconds as a safety
+  };
+
+  const handleStopPreview = () => {
+    const audio = document.getElementById('voice-preview-audio') as HTMLAudioElement;
+    if (audio) {
+      audio.pause();
+      audio.remove();
+    }
+    setPreviewingVoiceId(null);
   };
   
   return (
@@ -101,16 +133,15 @@ const Voices = () => {
                     variant="outline"
                     size="sm"
                     className="flex items-center gap-1"
-                    onClick={() => playPreview(voice.id)}
-                    disabled={previewingVoiceId === voice.id}
+                    onClick={() => previewingVoiceId === voice.id ? handleStopPreview() : handlePlayPreview(voice.id, voice.premium)}
                   >
                     {previewingVoiceId === voice.id ? (
-                      <span className="flex items-center">
-                        Playing<span className="ml-1 animate-pulse">...</span>
+                      <span className="flex items-center gap-1">
+                        <Square size={14} /> Stop
                       </span>
                     ) : (
                       <>
-                        {voice.premium ? <Lock size={14} /> : <Play size={14} />}
+                        <Play size={14} />
                         Preview
                       </>
                     )}
