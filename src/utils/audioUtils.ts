@@ -2,56 +2,53 @@
 import { Voice, AudioConversion } from '@/types';
 
 // Updated voices with rich descriptions highlighting quality, emotional range, and accent details
+// Now with working audio preview URLs
 export const sampleVoices: Voice[] = [
   {
     id: 'male-1',
     name: 'James',
     gender: 'male',
     description: 'Clear and articulate British English male voice with a warm, conversational tone. Excellent for storytelling with subtle emotional inflections.',
-    previewUrl: 'https://audio-samples.github.io/samples/mp3/blizzard_biased/sample-1.mp3',
+    previewUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/56/En-Matthew_6-9-13_male.ogg',
   },
   {
     id: 'male-2',
     name: 'Michael',
     gender: 'male',
     description: 'Crisp, professional American English male voice with a calm, authoritative presence. Perfect for explanations with natural-sounding emphasis.',
-    premium: true,
-    previewUrl: 'https://audio-samples.github.io/samples/mp3/blizzard_biased/sample-2.mp3',
+    previewUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/En-US-California-NewYork.ogg',
   },
   {
     id: 'male-3',
     name: 'Robert',
     gender: 'male',
     description: 'Smooth and engaging British English male voice with excellent diction and emotional range. Ideal for narrative content requiring nuanced expression.',
-    premium: true,
-    previewUrl: 'https://audio-samples.github.io/samples/mp3/blizzard_biased/sample-3.mp3',
+    previewUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/En-uk-welcome_to_wikipedia.ogg',
   },
   {
     id: 'female-1',
     name: 'Emma',
     gender: 'female',
     description: 'Youthful 24-year-old British English female voice with crystal clear pronunciation. Conveys a friendly, conversational style with natural emotional depth.',
-    previewUrl: 'https://audio-samples.github.io/samples/mp3/voice_samples/sample-1.mp3',
+    previewUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/16/En-uk-welcome.ogg',
   },
   {
     id: 'female-2',
     name: 'Sophia',
     gender: 'female',
     description: '23-year-old American English female voice with exceptional clarity and a soothing, confident tone. Perfect for engaging presentations with authentic emotional qualities.',
-    premium: true,
-    previewUrl: 'https://audio-samples.github.io/samples/mp3/voice_samples/sample-2.mp3',
+    previewUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d0/En-us-washington.ogg',
   },
   {
     id: 'female-3',
     name: 'Olivia',
     gender: 'female',
     description: '25-year-old British English female voice with a melodic quality and excellent diction. Delivers content with natural pacing and subtle emotional inflections.',
-    premium: true,
-    previewUrl: 'https://audio-samples.github.io/samples/mp3/voice_samples/sample-3.mp3',
+    previewUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d6/En-uk-oxford.ogg',
   },
 ];
 
-// This is a placeholder for the actual text-to-speech API
+// Updated text-to-speech API to use different voices for each selection
 export const convertTextToSpeech = async (
   text: string,
   voiceId: string
@@ -59,12 +56,21 @@ export const convertTextToSpeech = async (
   // Simulate API call with a delay
   return new Promise((resolve) => {
     setTimeout(() => {
+      // Find the selected voice to use its specific audio
+      const selectedVoice = sampleVoices.find(v => v.id === voiceId);
+      
+      // Different demo audio based on voice selection
+      let demoAudioUrl = 'https://upload.wikimedia.org/wikipedia/commons/5/56/En-Matthew_6-9-13_male.ogg'; // default
+      
+      if (selectedVoice) {
+        demoAudioUrl = selectedVoice.previewUrl || demoAudioUrl;
+      }
+      
       const conversion: AudioConversion = {
         id: Math.random().toString(36).substring(2, 11),
         text,
         voiceId,
-        // In a real app, this would be a URL to the audio file
-        audioUrl: 'https://audio-samples.github.io/samples/mp3/blizzard_biased/sample-0.mp3',
+        audioUrl: demoAudioUrl,
         status: 'completed',
         createdAt: new Date(),
       };
@@ -73,7 +79,7 @@ export const convertTextToSpeech = async (
   });
 };
 
-// Function to play a voice preview
+// Function to play a voice preview - fixed to handle errors better
 export const playVoicePreview = (voiceId: string): void => {
   const voice = sampleVoices.find(v => v.id === voiceId);
   if (!voice || !voice.previewUrl) return;
@@ -99,12 +105,21 @@ export const playVoicePreview = (voiceId: string): void => {
     audio.remove();
   });
   
+  // Add better error handling for audio playback
+  audio.addEventListener('error', (e) => {
+    console.error('Error playing audio preview:', e);
+    const previewButtons = document.querySelectorAll('.voice-preview-button');
+    previewButtons.forEach(button => {
+      button.classList.remove('playing');
+    });
+  });
+  
   audio.play().catch(error => {
     console.error('Error playing audio preview:', error);
   });
 };
 
-// Dummy function to get a user's conversions
+// Dummy function to get a user's conversions - updated to use different voices
 export const getUserConversions = async (): Promise<AudioConversion[]> => {
   // This would be a call to your backend
   return [
@@ -112,15 +127,15 @@ export const getUserConversions = async (): Promise<AudioConversion[]> => {
       id: '1',
       text: 'Welcome to our text-to-speech converter. Try it out now!',
       voiceId: 'female-1',
-      audioUrl: 'https://audio-samples.github.io/samples/mp3/blizzard_biased/sample-1.mp3',
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/16/En-uk-welcome.ogg',
       status: 'completed',
       createdAt: new Date(Date.now() - 86400000), // 1 day ago
     },
     {
       id: '2',
-      text: 'This is a sample of our premium voices. Subscribe to access all voices.',
+      text: 'This is a sample of our voices. All voices are free to use.',
       voiceId: 'male-2',
-      audioUrl: 'https://audio-samples.github.io/samples/mp3/blizzard_biased/sample-2.mp3',
+      audioUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/En-US-California-NewYork.ogg',
       status: 'completed',
       createdAt: new Date(Date.now() - 172800000), // 2 days ago
     },

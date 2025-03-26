@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { sampleVoices, playVoicePreview } from '@/utils/audioUtils';
 import { Voice } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Volume2, Play, Lock, Square } from 'lucide-react';
+import { Volume2, Play, Square } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface VoiceSelectorProps {
@@ -41,15 +41,7 @@ const VoiceSelector = ({ onSelect, selectedVoiceId, isLoggedIn = false }: VoiceS
   }, [previewingVoiceId]);
 
   const handlePlayPreview = (voice: Voice) => {
-    if (voice.premium && !isLoggedIn) {
-      toast({
-        title: "Premium Voice",
-        description: "Please upgrade your plan to access premium voices.",
-        variant: "default",
-      });
-      return;
-    }
-    
+    // All voices are now free
     setPreviewingVoiceId(voice.id);
     playVoicePreview(voice.id);
     
@@ -109,17 +101,12 @@ const VoiceSelector = ({ onSelect, selectedVoiceId, isLoggedIn = false }: VoiceS
               selectedVoiceId === voice.id
                 ? 'border-primary/50 bg-primary/5'
                 : 'border-border bg-card hover:border-primary/30'
-            } ${voice.premium && !isLoggedIn ? 'opacity-80' : ''}`}
+            }`}
           >
             <div className="flex items-start justify-between">
               <div>
                 <div className="flex items-center">
                   <h4 className="font-medium">{voice.name}</h4>
-                  {voice.premium && (
-                    <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gold-light text-gold-dark">
-                      Premium
-                    </span>
-                  )}
                 </div>
                 <p className="text-sm text-foreground/70 mt-1">{voice.description}</p>
               </div>
@@ -132,7 +119,6 @@ const VoiceSelector = ({ onSelect, selectedVoiceId, isLoggedIn = false }: VoiceS
                 size="sm"
                 className={`flex-1 voice-preview-button ${previewingVoiceId === voice.id ? 'playing' : ''}`}
                 onClick={() => previewingVoiceId === voice.id ? handleStopPreview() : handlePlayPreview(voice)}
-                disabled={voice.premium && !isLoggedIn}
               >
                 {previewingVoiceId === voice.id ? (
                   <span className="flex items-center gap-1">
@@ -141,7 +127,7 @@ const VoiceSelector = ({ onSelect, selectedVoiceId, isLoggedIn = false }: VoiceS
                   </span>
                 ) : (
                   <span className="flex items-center gap-1">
-                    {voice.premium && !isLoggedIn ? <Lock size={14} /> : <Play size={14} />}
+                    <Play size={14} />
                     Preview
                   </span>
                 )}
@@ -151,7 +137,6 @@ const VoiceSelector = ({ onSelect, selectedVoiceId, isLoggedIn = false }: VoiceS
                 size="sm"
                 className="flex-1"
                 onClick={() => onSelect(voice.id)}
-                disabled={voice.premium && !isLoggedIn}
                 variant={selectedVoiceId === voice.id ? "default" : "secondary"}
               >
                 {selectedVoiceId === voice.id ? 'Selected' : 'Select'}
@@ -160,12 +145,6 @@ const VoiceSelector = ({ onSelect, selectedVoiceId, isLoggedIn = false }: VoiceS
           </div>
         ))}
       </div>
-      
-      {!isLoggedIn && (
-        <div className="mt-4 p-3 bg-primary/5 border border-primary/20 rounded-lg text-sm text-center">
-          Upgrade to access all premium voices. <a href="/pricing" className="text-primary hover:underline">View plans</a>
-        </div>
-      )}
     </div>
   );
 };

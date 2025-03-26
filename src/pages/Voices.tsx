@@ -2,7 +2,7 @@
 import Navbar from '@/components/Navbar';
 import { sampleVoices, playVoicePreview } from '@/utils/audioUtils';
 import { Button } from '@/components/ui/button';
-import { Volume2, Play, Lock, Square } from 'lucide-react';
+import { Volume2, Play, Square } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -34,8 +34,7 @@ const Voices = () => {
     };
   }, [previewingVoiceId]);
   
-  const handlePlayPreview = (voiceId: string, isPremium: boolean = false) => {
-    // For demo purposes, allow playing premium voices on the voices page
+  const handlePlayPreview = (voiceId: string) => {
     setPreviewingVoiceId(voiceId);
     playVoicePreview(voiceId);
     
@@ -61,7 +60,7 @@ const Voices = () => {
       <main className="flex-1 pt-28 pb-16 px-6">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold mb-4">Our Premium Voices</h1>
+            <h1 className="text-3xl font-bold mb-4">Our Text-to-Speech Voices</h1>
             <p className="text-lg text-foreground/70 max-w-2xl mx-auto">
               Explore our collection of natural-sounding, human voices for your audio content.
             </p>
@@ -106,11 +105,6 @@ const Voices = () => {
                   <div>
                     <div className="flex items-center">
                       <h3 className="text-xl font-medium">{voice.name}</h3>
-                      {voice.premium && (
-                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gold-light text-gold-dark">
-                          Premium
-                        </span>
-                      )}
                     </div>
                     <p className="text-foreground/70 mt-1">{voice.gender === 'male' ? 'Male Voice' : 'Female Voice'}</p>
                   </div>
@@ -133,7 +127,7 @@ const Voices = () => {
                     variant="outline"
                     size="sm"
                     className="flex items-center gap-1"
-                    onClick={() => previewingVoiceId === voice.id ? handleStopPreview() : handlePlayPreview(voice.id, voice.premium)}
+                    onClick={() => previewingVoiceId === voice.id ? handleStopPreview() : handlePlayPreview(voice.id)}
                   >
                     {previewingVoiceId === voice.id ? (
                       <span className="flex items-center gap-1">
@@ -154,14 +148,14 @@ const Voices = () => {
           <div className="mt-16 glassmorphism rounded-xl p-8 text-center">
             <h2 className="text-2xl font-bold mb-4">Want to Use These Voices?</h2>
             <p className="text-lg text-foreground/70 mb-6 max-w-2xl mx-auto">
-              Get access to all premium voices with our subscription plans.
+              All our voices are free to use. Try them out now!
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button size="lg" asChild>
-                <a href="/pricing">View Plans</a>
+                <a href="/converter">Try Now</a>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <a href="/converter">Try For Free</a>
+                <a href="/pricing">View Plans</a>
               </Button>
             </div>
           </div>
