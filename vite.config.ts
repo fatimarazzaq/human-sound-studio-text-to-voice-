@@ -9,7 +9,6 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: '/voice-studio/',  // Set this to the repository name
   plugins: [
     react(),
     mode === 'development' &&

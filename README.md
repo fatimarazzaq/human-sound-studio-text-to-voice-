@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/58cd3f77-2bb3-44ff-ba1f-32dda9053e5b
+**URL**: https://voice-studio-frontend.netlify.app/
 
 Follow these steps:
 
